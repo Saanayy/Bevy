@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "550389173648",
+    "firebase_url": "https://bevy-dd189.firebaseio.com",
+    "project_id": "bevy-dd189",
+    "storage_bucket": "bevy-dd189.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:550389173648:android:7f2d8660746c4eb2c47715",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "550389173648-sphkgjl55mule4h93rvrmrdc6tpcktoc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.myapplication",
+            "certificate_hash": "bdaafbc7661f23656d07ba3653f00994a08caaa2"
+          }
+        },
+        {
+          "client_id": "550389173648-ptodjjolanrscccefkppqlul3tibtq5c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAWySVbeGjf8Myvl52NTl8VL1Rj44_kS0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "550389173648-ptodjjolanrscccefkppqlul3tibtq5c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

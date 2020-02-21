@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity">
+
+
+    <TextView
+        android:id="@+id/login_company_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginRight="16dp"
+        android:text="Login to Bevy Insight"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
+    <TextView
+        android:layout_below="@+id/login_company_name"
+        android:id="@+id/login_random_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Project Workmine"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:layout_margin="16dp"
+        android:textSize="20sp"
+        android:textAlignment="center"
+        />
+
+    <EditText
+        android:id="@+id/login_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email Id"
+        android:layout_marginTop="32dp"
+        android:layout_below="@+id/login_random_text"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/rectangle"
+        android:padding="8dp"
+        android:textAlignment="center"
+
+        />
+
+    <EditText
+        android:id="@+id/login_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:layout_below="@+id/login_email"
+        android:layout_margin="16dp"
+        android:background="@drawable/rectangle"
+        android:padding="8dp"
+        android:textAlignment="center"
+
+        />
+
+    <Button
+        android:id="@+id/login_login"
+        android:layout_alignParentEnd="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="Login"
+        android:layout_margin="16dp"
+        android:layout_below="@+id/login_password"
+        />
+
+    <Button
+        android:id="@+id/login_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="Register"
+        android:layout_margin="16dp"
+        android:layout_alignParentBottom="true"
+        />
+
+</RelativeLayout>
