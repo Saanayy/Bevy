@@ -11,7 +11,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.myapplication.MainActivity;
 import com.example.myapplication.Modals.User;
 import com.example.myapplication.R;
 import com.example.myapplication.Utilities.UtilityFunctions;

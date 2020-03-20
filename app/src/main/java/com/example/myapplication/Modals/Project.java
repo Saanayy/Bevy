@@ -8,16 +8,26 @@ public class Project {
     private Date confirmationDate;
     private double amount;
     private Date deadline;
+    private String result;
 
     public Project() {
     }
 
-    public Project(String projectId, String name, Date confirmationDate, double amount, Date deadline) {
+    public Project(String projectId, String name, Date confirmationDate, double amount, Date deadline, String result) {
         this.projectId = projectId;
         this.name = name;
         this.confirmationDate = confirmationDate;
         this.amount = amount;
         this.deadline = deadline;
+        this.result = result;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 
     public String getProjectId() {

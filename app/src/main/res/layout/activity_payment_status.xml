@@ -6,7 +6,7 @@
     android:layout_margin="16dp"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".MainActivity">
+    tools:context=".Activities.MainActivity">
 
     <RelativeLayout
         android:id="@+id/payment_status_topbar"

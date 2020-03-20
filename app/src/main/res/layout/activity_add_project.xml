@@ -33,7 +33,6 @@
     </RelativeLayout>
 
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -57,11 +56,11 @@
             android:layout_below="@+id/addproj_name">
 
             <EditText
-                android:layout_toLeftOf="@+id/addproj_confdate_icon"
                 android:id="@+id/addproj_confdate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:layout_toLeftOf="@+id/addproj_confdate_icon"
                 android:enabled="false"
                 android:hint="Confirmation Date" />
 
@@ -69,20 +68,107 @@
                 android:id="@+id/addproj_confdate_icon"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 android:src="@drawable/ic_today_black_24dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/addproj_checkbox_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/addproj_confdate_layout"
+            android:layout_margin="16dp">
+
+            <LinearLayout
+                android:id="@+id/addproj_checkbox_row1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:orientation="horizontal"
+                android:padding="4dp">
+
+                <CheckBox
+                    android:id="@+id/checkbox_android"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onCheckboxClicked"
+                    android:text="Android" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_website"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onCheckboxClicked"
+                    android:text="Website" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_admin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onCheckboxClicked"
+                    android:text="Admin" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_maintainance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onCheckboxClicked"
+                    android:text="Maintainance" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/addproj_checkbox_row2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/addproj_checkbox_row1"
+                android:orientation="horizontal"
+                android:padding="4dp">
+
+                <CheckBox
+                    android:id="@+id/checkbox_deployment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onCheckboxClicked"
+                    android:text="Deployment" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onCheckboxClicked"
+                    android:text="Logo" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_uiux"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onCheckboxClicked"
+                    android:text="UI/UX" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_cms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onCheckboxClicked"
+                    android:text="CMS" />
+
+
+            </LinearLayout>
 
         </RelativeLayout>
 
         <EditText
             android:id="@+id/addproj_amount"
-            android:layout_below="@+id/addproj_confdate_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/addproj_checkbox_layout"
             android:layout_margin="16dp"
-            android:inputType="number"
-            android:hint="Project Amount (in Rs)" />
+            android:hint="Project Amount (in Rs)"
+            android:inputType="number" />
 
         <RelativeLayout
             android:id="@+id/addproj_deadline_layout"
@@ -91,11 +177,11 @@
             android:layout_below="@+id/addproj_amount">
 
             <EditText
-                android:layout_toLeftOf="@+id/addproj_deadlinedate_icon"
                 android:id="@+id/addproj_deadlinedate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:layout_toLeftOf="@+id/addproj_deadlinedate_icon"
                 android:enabled="false"
                 android:hint="Confirmation Date" />
 
@@ -103,8 +189,8 @@
                 android:id="@+id/addproj_deadlinedate_icon"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 android:src="@drawable/ic_today_black_24dp" />
 
         </RelativeLayout>
@@ -113,11 +199,9 @@
             android:id="@+id/addproj_add"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add"
             android:layout_alignParentBottom="true"
             android:layout_margin="16dp"
-            />
-
+            android:text="Add" />
 
 
     </RelativeLayout>

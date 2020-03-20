@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,10 +13,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.Activities.AddProjectActivity;
-import com.example.myapplication.Activities.LoginActivity;
 import com.example.myapplication.Adapters.ProjectAdapter;
 import com.example.myapplication.Modals.Project;
+import com.example.myapplication.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,9 +38,11 @@ public class MainActivity extends AppCompatActivity {
     private List<Project> projects = new ArrayList<>();
     private TextView tvLogout;
     private String uid;
+
     // Views
     private RecyclerView rvRecycler;
     private ImageView ivAdd;
+
     // Firebase variables
     private FirebaseAuth mAuth;
 
