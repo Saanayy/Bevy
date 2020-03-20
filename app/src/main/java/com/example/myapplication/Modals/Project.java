@@ -1,32 +1,39 @@
 package com.example.myapplication.Modals;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 public class Project {
-    private String Name;
+    private String projectId;
+    private String name;
     private Date confirmationDate;
     private double amount;
     private Date deadline;
 
-    public Project(String name, Date confirmationDate, double amount, Date deadline) {
-        Name = name;
-        this.confirmationDate = confirmationDate;
+    public Project() {
+    }
 
+    public Project(String projectId, String name, Date confirmationDate, double amount, Date deadline) {
+        this.projectId = projectId;
+        this.name = name;
+        this.confirmationDate = confirmationDate;
         this.amount = amount;
         this.deadline = deadline;
     }
 
-    public Project(String name) {
-        Name = name;
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public Date getConfirmationDate() {

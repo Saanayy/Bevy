@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".Activities.AddNoteActivity">
+
+        <RelativeLayout
+            android:id="@+id/add_notes_topbar"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_alignParentTop="true">
+
+            <ImageView
+                android:id="@+id/add_notes_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="8dp"
+                android:src="@drawable/ic_arrow_back_black_24dp" />
+
+            <TextView
+                android:id="@+id/add_notes_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="Add/Edit"
+                android:textColor="@android:color/black"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/add_notes_add"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:clickable="true"
+                android:src="@drawable/ic_add_circle_outline_black_24dp"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/add_notes_heading"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_below="@+id/add_notes_topbar"
+            android:layout_margin="16dp"
+            android:background="@drawable/rectangle"
+            android:hint="Title"
+
+            />
+
+        <EditText
+            android:id="@+id/add_notes_description"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_below="@+id/add_notes_heading"
+            android:layout_margin="16dp"
+            android:background="@drawable/rectangle"
+            android:hint="Description"
+            android:maxLines="10"
+
+            />
+
+        <Button
+            android:id="@+id/add_notes_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/add_notes_description"
+            android:layout_margin="16dp"
+            android:gravity="center"
+            android:text="Save" />
+
+
+    </RelativeLayout>
+
+</ScrollView>
+

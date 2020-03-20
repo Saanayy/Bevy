@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    tools:context=".Activities.NotesActivity">
+
+    <RelativeLayout
+        android:id="@+id/notes_topbar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_alignParentTop="true">
+
+        <ImageView
+            android:id="@+id/notes_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:src="@drawable/ic_arrow_back_black_24dp" />
+
+        <TextView
+            android:id="@+id/notes_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Notes"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/notes_add"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:src="@drawable/ic_add_circle_outline_black_24dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/notes_searchbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/notes_topbar"
+        android:padding="4dp">
+
+        <EditText
+            android:id="@+id/notes_searchtext"
+            android:layout_width="304dp"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/notes_searchOK"
+            android:layout_alignParentStart="true"
+            android:layout_marginEnd="11dp"
+            android:layout_toStartOf="@+id/notes_searchOK"
+            android:hint="Search text here..." />
+
+        <TextView
+            android:id="@+id/notes_searchOK"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="OK"
+            android:textSize="18sp" />
+
+
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/notes_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/notes_searchbar" />
+
+
+</RelativeLayout>

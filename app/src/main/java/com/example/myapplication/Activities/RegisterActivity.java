@@ -1,7 +1,4 @@
-package com.example.myapplication;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+package com.example.myapplication.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,21 +8,36 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.myapplication.MainActivity;
+import com.example.myapplication.Modals.User;
+import com.example.myapplication.R;
 import com.example.myapplication.Utilities.UtilityFunctions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    // Field variables
     private static final String TAG = "register";
-    private FirebaseAuth mAuth;
+    // Write a message to the database
+    DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("users");
+    // Views
     private Button btnLogin, btnRegister;
-    EditText etEmail, etPassword;
+    private EditText etEmail, etPassword;
+    //Firebase variables
+    private FirebaseAuth mAuth;
 
-
+    // Activity  lifecycle methods
     @Override
     public void onStart() {
         super.onStart();
@@ -63,11 +75,11 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void register() {
-        String email = etEmail.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
+        final String email = etEmail.getText().toString().trim();
+        final String password = etPassword.getText().toString().trim();
 
         if (email.length() != 0 && password.length() != 0) {
-            if (UtilityFunctions.isValidEmailId(email)) {
+            if (UtilityFunctions.isValidEmailId(email) && UtilityFunctions.isValidPassword(password)) {
                 mAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                             @Override
@@ -76,6 +88,8 @@ public class RegisterActivity extends AppCompatActivity {
                                     // Sign in success, update UI with the signed-in user's information
                                     Log.d(TAG, "createUserWithEmail:success");
                                     finish();
+                                    addUserToDatabase(email, password);
+
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -89,8 +103,26 @@ public class RegisterActivity extends AppCompatActivity {
                 Toast.makeText(this, "Invalid email format", Toast.LENGTH_SHORT).show();
             }
         }else{
-            Toast.makeText(this, "Email or password cannot be empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Email or password cannot be empty, or less than 6 characters long.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void addUserToDatabase(String email, String password) {
+        String uid = mAuth.getUid();
+        User user = new User(uid, email, password);
+        databaseRef.child(uid).child("details").setValue(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(RegisterActivity.this, "User added to the database", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(RegisterActivity.this, "Failed to add user to the database", Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 
     private void initaliseFireBaseVariables() {

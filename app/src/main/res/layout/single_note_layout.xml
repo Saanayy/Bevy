@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/single_project_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <TextView
+        android:id="@+id/single_note_heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Project Name"
-        android:id="@+id/single_project_name"
-        android:textSize="16sp"
-        android:textColor="@android:color/black"
         android:layout_margin="8dp"
-        />
+        android:text="Heading"
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
 
     <TextView
-        android:layout_below="@+id/single_project_name"
+        android:id="@+id/single_note_desc"
         android:layout_width="match_parent"
-        android:id="@+id/single_project_date"
         android:layout_height="wrap_content"
-        android:text="Date"
+        android:layout_below="@+id/single_note_heading"
         android:layout_margin="8dp"
-        />
-
+        android:text="Detail" />
 
 
 </RelativeLayout>

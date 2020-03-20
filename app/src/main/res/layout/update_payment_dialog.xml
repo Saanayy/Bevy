@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="200dp"
+    android:layout_height="200dp"
+    android:layout_margin="16dp"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/dialog_payment_placeholder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="Amount" />
+
+    <EditText
+        android:id="@+id/dialog_payment_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialog_payment_placeholder"
+        android:layout_alignStart="@+id/dialog_payment_placeholder" />
+
+    <Button
+        android:id="@+id/dialog_payment_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialog_payment_amount"
+        android:text="Save"
+        android:visibility="gone" />
+
+</RelativeLayout>

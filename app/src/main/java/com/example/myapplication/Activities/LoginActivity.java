@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.MainActivity;
+import com.example.myapplication.R;
 import com.example.myapplication.Utilities.UtilityFunctions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -20,11 +22,17 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
 
+    // Field varaibles
     private static final String TAG = "Login";
+
+    // Views
     EditText etEmail, etPassword;
     private Button btnLogin, btnRegister;
+
+    //Firebase
     private FirebaseAuth mAuth;
 
+    // Activity Lifecycle methods
     @Override
     public void onStart() {
         super.onStart();
@@ -64,12 +72,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+
     private void login() {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
         if (email.length() != 0 && password.length() != 0) {
-            if (UtilityFunctions.isValidEmailId(email)) {
+            if (UtilityFunctions.isValidEmailId(email) && UtilityFunctions.isValidPassword(password)) {
                 mAuth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                             @Override
@@ -93,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(this, "Invalid email format", Toast.LENGTH_SHORT).show();
             }
         }else{
-            Toast.makeText(this, "Email or password cannot be empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Email or password cannot be empty, or less than 6 characters in length", Toast.LENGTH_SHORT).show();
         }
     }
 

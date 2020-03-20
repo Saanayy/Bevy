@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddProjectActivity">
+    tools:context=".Activities.AddProjectActivity">
 
     <RelativeLayout
         android:id="@+id/addproj__topbar"
@@ -32,13 +32,7 @@
             android:src="@drawable/ic_arrow_back_black_24dp" />
     </RelativeLayout>
 
-    <androidx.core.widget.ContentLoadingProgressBar
-        android:id="@+id/addproj_progress"
-        android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:layout_below="@+id/addproj__topbar"
-        android:indeterminate="true"
-        android:visibility="gone" />
+
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -87,6 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
+            android:inputType="number"
             android:hint="Project Amount (in Rs)" />
 
         <RelativeLayout

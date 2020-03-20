@@ -1,50 +1,57 @@
 package com.example.myapplication;
 
-import androidx.annotation.Nullable;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-
+import com.example.myapplication.Activities.AddProjectActivity;
+import com.example.myapplication.Activities.LoginActivity;
 import com.example.myapplication.Adapters.ProjectAdapter;
 import com.example.myapplication.Modals.Project;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    // Field variables
     private static final String TAG = "Main";
-    private FirebaseAuth mAuth;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private RecyclerView rvRecycler;
-
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference usersRef = database.getReference().child("users");
     ProjectAdapter mAdapter;
     RecyclerView.LayoutManager layoutManager;
     private List<Project> projects = new ArrayList<>();
-
     private TextView tvLogout;
-    ImageView ivAdd;
+    private String uid;
+    // Views
+    private RecyclerView rvRecycler;
+    private ImageView ivAdd;
+    // Firebase variables
+    private FirebaseAuth mAuth;
 
+    // Activity lifecycle callbacks
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
+
         if(currentUser == null){
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
@@ -52,16 +59,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setRecylerView() {
-        // use a linear layout manager
-        layoutManager = new LinearLayoutManager(this);
-        rvRecycler.setLayoutManager(layoutManager);
-        // specify an adapter (see also next example)
-        mAdapter = new ProjectAdapter(this, projects);
-        rvRecycler.hasFixedSize();
-        rvRecycler.setAdapter(mAdapter);
-        rvRecycler.addItemDecoration(new DividerItemDecoration(rvRecycler.getContext(), DividerItemDecoration.VERTICAL));
-    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,8 +87,28 @@ public class MainActivity extends AppCompatActivity {
 
         setRecylerView();
 
-        //TODO: Fetch data here and set to recycler view
+        fetchData();
+        setRecylerView();
+    }
 
+    private void fetchData() {
+        DatabaseReference userProjectRef = usersRef.child(uid).child("projects");
+        userProjectRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                projects.clear();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Project project = postSnapshot.getValue(Project.class);
+                    projects.add(project);
+                }
+                mAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(MainActivity.this, "Cancelled Loading the data", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void logout() {
@@ -100,9 +118,20 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
+    private void setRecylerView() {
+        // use a linear layout manager
+        layoutManager = new LinearLayoutManager(this);
+        rvRecycler.setLayoutManager(layoutManager);
+        mAdapter = new ProjectAdapter(this, projects);
+        rvRecycler.hasFixedSize();
+        rvRecycler.setAdapter(mAdapter);
+        rvRecycler.addItemDecoration(new DividerItemDecoration(rvRecycler.getContext(), DividerItemDecoration.VERTICAL));
+    }
+
     private void initaliseFireBaseVariables() {
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+        uid = mAuth.getUid();
     }
 
     private void initialiseAllViews() {
