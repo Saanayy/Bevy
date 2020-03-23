@@ -31,6 +31,7 @@ public class ProjectDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ProjectDetailActivity.this, PaymentStatus.class);
+                intent.putExtra("projectid", projectId);
                 startActivity(intent);
             }
         });
@@ -38,7 +39,9 @@ public class ProjectDetailActivity extends AppCompatActivity {
         btnProjectStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(ProjectDetailActivity.this, ProjectStatusActivity.class);
+                intent.putExtra("projectid", projectId);
+                startActivity(intent);
             }
         });
 
