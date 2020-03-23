@@ -67,7 +67,7 @@ public class ProjectStatusActivity extends AppCompatActivity {
         DatabaseReference projectStatusRef = databaseReference.child("users").child(uid).child("projects").child(projectID).child("projectstatus");
         String key = projectStatusRef.push().getKey();
         //Todo: create projectstatus dynamic here
-        ProjectStatus projectStatus = new ProjectStatus("android", "20/10/1290", 80);
+        ProjectStatus projectStatus = new ProjectStatus("android", "20/10/1290", 80, key);
         projectStatusRef.child(key).setValue(projectStatus)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

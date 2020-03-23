@@ -3,14 +3,24 @@ package com.example.myapplication.Modals;
 public class ProjectStatus {
     String name, date;
     int completionPercentage;
+    String projectStatusKey;
 
     public ProjectStatus() {
     }
 
-    public ProjectStatus(String name, String date, int completionPercentage) {
+    public ProjectStatus(String name, String date, int completionPercentage, String projectStatusKey) {
         this.name = name;
         this.date = date;
         this.completionPercentage = completionPercentage;
+        this.projectStatusKey = projectStatusKey;
+    }
+
+    public String getProjectStatusKey() {
+        return projectStatusKey;
+    }
+
+    public void setProjectStatusKey(String projectStatusKey) {
+        this.projectStatusKey = projectStatusKey;
     }
 
     public String getName() {

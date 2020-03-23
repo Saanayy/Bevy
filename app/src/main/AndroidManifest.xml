@@ -16,7 +16,7 @@
         <activity android:name=".Activities.AddNoteActivity" />
         <activity android:name=".Activities.NotesActivity" />
         <activity android:name=".Activities.AmountHistoryActivity" />
-        <activity android:name=".Activities.PaymentStatus"></activity>
+        <activity android:name=".Activities.PaymentStatusActivity"></activity>
         <activity android:name=".Activities.ProjectDetailActivity" />
         <activity android:name=".Activities.AddProjectActivity" />
         <activity android:name=".Activities.RegisterActivity" />

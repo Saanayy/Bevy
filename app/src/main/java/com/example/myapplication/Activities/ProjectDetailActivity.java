@@ -53,7 +53,7 @@ public class ProjectDetailActivity extends AppCompatActivity {
         btnPaymentStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ProjectDetailActivity.this, PaymentStatus.class);
+                Intent intent = new Intent(ProjectDetailActivity.this, PaymentStatusActivity.class);
                 intent.putExtra("projectid", projectId);
                 startActivity(intent);
             }
