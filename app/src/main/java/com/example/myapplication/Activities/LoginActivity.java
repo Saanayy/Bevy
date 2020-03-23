@@ -25,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "Login";
 
     // Views
+    me.zhanghai.android.materialprogressbar.MaterialProgressBar progressBar;
     EditText etEmail, etPassword;
     private Button btnLogin, btnRegister;
 
@@ -52,6 +53,7 @@ public class LoginActivity extends AppCompatActivity {
 
         initaliseFireBaseVariables();
 
+        progressBar.setVisibility(View.GONE);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,6 +75,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void login() {
+        progressBar.setVisibility(View.VISIBLE);
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
@@ -85,12 +88,14 @@ public class LoginActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     // Sign in success, update UI with the signed-in user's information
                                     Log.d(TAG, "signInWithEmail:success");
+                                    progressBar.setVisibility(View.GONE);
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     startActivity(intent);
 
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                    progressBar.setVisibility(View.GONE);
                                     Toast.makeText(LoginActivity.this, "Authentication failed.",
                                             Toast.LENGTH_SHORT).show();
                                 }
@@ -99,8 +104,10 @@ public class LoginActivity extends AppCompatActivity {
 
             } else {
                 Toast.makeText(this, "Invalid email format", Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
             }
         }else{
+            progressBar.setVisibility(View.GONE);
             Toast.makeText(this, "Email or password cannot be empty, or less than 6 characters in length", Toast.LENGTH_SHORT).show();
         }
     }
@@ -110,6 +117,7 @@ public class LoginActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.login_email);
         etPassword = findViewById(R.id.login_password);
         btnRegister = findViewById(R.id.login_register);
+        progressBar = findViewById(R.id.login_progress);
     }
 
     private void initaliseFireBaseVariables() {

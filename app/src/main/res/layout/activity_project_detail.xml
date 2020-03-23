@@ -2,6 +2,7 @@
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="wrap_content">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -9,6 +10,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".Activities.ProjectDetailActivity">
+
+        <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+            android:id="@+id/project_detail_progress"
+            style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_alignParentTop="true"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:mpb_progressStyle="horizontal" />
+
 
         <RelativeLayout
             android:id="@+id/project_detail_topbar"
@@ -68,7 +80,7 @@
                     android:id="@+id/project_detail_confirmationdate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="10/8/2015" />
+                    tools:text="10/8/2015" />
             </LinearLayout>
 
             <LinearLayout
@@ -86,7 +98,7 @@
                     android:id="@+id/project_detail_deadlinedate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="12/5/2016" />
+                    tools:text="12/5/2016" />
             </LinearLayout>
 
             <LinearLayout
@@ -122,7 +134,7 @@
                     android:id="@+id/project_detail_completionPercent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="80%" />
+                    tools:text="80%" />
             </LinearLayout>
 
 

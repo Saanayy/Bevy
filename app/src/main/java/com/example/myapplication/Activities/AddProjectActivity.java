@@ -35,11 +35,14 @@ public class AddProjectActivity extends AppCompatActivity {
     // Field variables
     private static final String TAG = "register";
     String result = "";
+    Boolean update;
 
     // Views
+    me.zhanghai.android.materialprogressbar.MaterialProgressBar progressBar;
     EditText etName, etConfDate, etAmount, etDeadLineDate;
     ImageView ivConfCal, ivdeadLineCal;
     Button btnAdd;
+
     // Firebase Variables
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private Boolean[] checkBoxes = new Boolean[8];
@@ -53,6 +56,7 @@ public class AddProjectActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
             Intent intent = new Intent(AddProjectActivity.this, LoginActivity.class);
+            update = getIntent().getBooleanExtra("update", false);
             startActivity(intent);
         }
     }
@@ -65,52 +69,28 @@ public class AddProjectActivity extends AppCompatActivity {
         // Check which checkbox was clicked
         switch (view.getId()) {
             case R.id.checkbox_android:
-                if (checked)
-                    checkBoxes[0] = true;
-                else
-                    checkBoxes[0] = false;
+                checkBoxes[0] = checked;
                 break;
             case R.id.checkbox_website:
-                if (checked)
-                    checkBoxes[1] = true;
-                else
-                    checkBoxes[1] = false;
+                checkBoxes[1] = checked;
                 break;
             case R.id.checkbox_admin:
-                if (checked)
-                    checkBoxes[2] = true;
-                else
-                    checkBoxes[2] = false;
+                checkBoxes[2] = checked;
                 break;
             case R.id.checkbox_maintainance:
-                if (checked)
-                    checkBoxes[3] = true;
-                else
-                    checkBoxes[3] = false;
+                checkBoxes[3] = checked;
                 break;
             case R.id.checkbox_deployment:
-                if (checked)
-                    checkBoxes[4] = true;
-                else
-                    checkBoxes[4] = false;
+                checkBoxes[4] = checked;
                 break;
             case R.id.checkbox_logo:
-                if (checked)
-                    checkBoxes[5] = true;
-                else
-                    checkBoxes[5] = false;
+                checkBoxes[5] = checked;
                 break;
             case R.id.checkbox_uiux:
-                if (checked)
-                    checkBoxes[6] = true;
-                else
-                    checkBoxes[6] = false;
+                checkBoxes[6] = checked;
                 break;
             case R.id.checkbox_cms:
-                if (checked)
-                    checkBoxes[7] = true;
-                else
-                    checkBoxes[7] = false;
+                checkBoxes[7] = checked;
                 break;
         }
     }
@@ -121,6 +101,8 @@ public class AddProjectActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_project);
 
         initialiseAllViews();
+
+        progressBar.setVisibility(View.GONE);
 
         initaliseFireBaseVariables();
 
@@ -145,6 +127,8 @@ public class AddProjectActivity extends AppCompatActivity {
             public void onClick(View v) {
                 btnAdd.setEnabled(false);
                 // Fetch all the data from the views
+
+                progressBar.setVisibility(View.VISIBLE);
                 String name = etName.getText().toString().trim();
                 Date deadlinedate = null, confDate = null;
                 String deadline = etDeadLineDate.getText().toString().trim();
@@ -186,6 +170,8 @@ public class AddProjectActivity extends AppCompatActivity {
 
     private void addProjectToDatabase(String name, String deadline, String amount, String conf, Date confDate, Date deadlinedate, String result) {
         if (name.length() != 0 && deadline.length() != 0 && amount.length() != 0 && conf.length() != 0) {
+
+            progressBar.setVisibility(View.VISIBLE);
             // Fetch the unique key of the project and the user id of the user.
             // Push two instances of the project, one to the users node and one
             // to the projects node.
@@ -218,6 +204,8 @@ public class AddProjectActivity extends AppCompatActivity {
                                             Toast.makeText(AddProjectActivity.this, "Project addition for normalisation Failed ", Toast.LENGTH_SHORT).show();
                                         }
                                     });
+
+                            progressBar.setVisibility(View.GONE);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -225,12 +213,14 @@ public class AddProjectActivity extends AppCompatActivity {
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(AddProjectActivity.this, "Project adding failed", Toast.LENGTH_SHORT).show();
                             btnAdd.setEnabled(true);
+                            progressBar.setVisibility(View.GONE);
                         }
                     });
 
         } else {
             Toast.makeText(AddProjectActivity.this, "Data Connot be empty", Toast.LENGTH_SHORT).show();
             btnAdd.setEnabled(true);
+            progressBar.setVisibility(View.GONE);
         }
     }
 
@@ -260,6 +250,7 @@ public class AddProjectActivity extends AppCompatActivity {
     }
 
     private void initialiseAllViews() {
+        progressBar = findViewById(R.id.addproj_progress);
         etName = findViewById(R.id.addproj_name);
         etConfDate = findViewById(R.id.addproj_confdate);
         etAmount = findViewById(R.id.addproj_amount);

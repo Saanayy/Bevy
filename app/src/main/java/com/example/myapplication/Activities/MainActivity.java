@@ -30,6 +30,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     // Field variables
+    me.zhanghai.android.materialprogressbar.MaterialProgressBar progressBar;
     private static final String TAG = "Main";
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference usersRef = database.getReference().child("users");
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         initialiseAllViews();
 
         initaliseFireBaseVariables();
-
+        progressBar.setVisibility(View.GONE);
         tvLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,6 +94,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fetchData() {
+        if (uid == null) return;
+        progressBar.setVisibility(View.VISIBLE);
         DatabaseReference userProjectRef = usersRef.child(uid).child("projects");
         userProjectRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -102,12 +105,14 @@ public class MainActivity extends AppCompatActivity {
                     Project project = postSnapshot.getValue(Project.class);
                     projects.add(project);
                 }
+                progressBar.setVisibility(View.GONE);
                 mAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(MainActivity.this, "Cancelled Loading the data", Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -139,5 +144,6 @@ public class MainActivity extends AppCompatActivity {
         tvLogout = findViewById(R.id.main_logout);
         ivAdd = findViewById(R.id.main_add);
         rvRecycler = findViewById(R.id.main_project_recycler);
+        progressBar = findViewById(R.id.main_progress);
     }
 }
