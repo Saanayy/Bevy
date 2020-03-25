@@ -37,6 +37,7 @@ public class PaymentStatusAdapter extends RecyclerView.Adapter<PaymentStatusView
         holder.tvAmount.setText(paymentStatus.getAmount());
         holder.tvName.setText(paymentStatus.getName());
         holder.tvDate.setText(paymentStatus.getDate());
+        holder.cbPaid.setChecked(paymentStatus.isCheck());
     }
 
     @Override

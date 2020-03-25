@@ -11,12 +11,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.ProjectStatusActivity"></activity>
+        <activity android:name=".Activities.ApplicationDetailActivity"></activity>
+        <activity android:name=".Activities.ProjectStatusActivity" />
         <activity android:name=".Activities.ShowNote" />
         <activity android:name=".Activities.AddNoteActivity" />
         <activity android:name=".Activities.NotesActivity" />
         <activity android:name=".Activities.AmountHistoryActivity" />
-        <activity android:name=".Activities.PaymentStatusActivity"></activity>
+        <activity android:name=".Activities.PaymentStatusActivity" />
         <activity android:name=".Activities.ProjectDetailActivity" />
         <activity android:name=".Activities.AddProjectActivity" />
         <activity android:name=".Activities.RegisterActivity" />

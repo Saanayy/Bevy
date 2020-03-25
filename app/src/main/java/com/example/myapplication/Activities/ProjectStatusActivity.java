@@ -107,7 +107,7 @@ public class ProjectStatusActivity extends AppCompatActivity {
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         rvProjectStatusList.setLayoutManager(layoutManager);
-        mAdapter = new ProjectStatusAdapter(this, statuses);
+        mAdapter = new ProjectStatusAdapter(this, statuses, projectID);
         rvProjectStatusList.hasFixedSize();
         rvProjectStatusList.setAdapter(mAdapter);
         rvProjectStatusList.addItemDecoration(new DividerItemDecoration(rvProjectStatusList.getContext(), DividerItemDecoration.VERTICAL));
