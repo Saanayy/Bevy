@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,11 +24,14 @@ public class AddNoteActivity extends AppCompatActivity {
     //Field Variables
     private static final String TAG = "AddNote";
     String projectId;
+
     //Firebase Variables
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     FirebaseAuth mAuth;
     private String uid;
+
     //Views
+    private ImageView ivBack;
     private Button btnSave;
     private EditText etHeading, etDetails;
 
@@ -39,10 +43,15 @@ public class AddNoteActivity extends AppCompatActivity {
         Intent intent = getIntent();
         projectId = intent.getStringExtra("projectid");
 
-
-        Toast.makeText(this, "ProjectID" + projectId, Toast.LENGTH_SHORT).show();
         intialiseAllViews();
         initialiseFirebaseVaraibles();
+
+        ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,5 +114,6 @@ public class AddNoteActivity extends AppCompatActivity {
         etHeading = findViewById(R.id.add_notes_heading);
         etDetails = findViewById(R.id.add_notes_description);
         btnSave = findViewById(R.id.add_notes_save);
+        ivBack = findViewById(R.id.add_notes_back);
     }
 }

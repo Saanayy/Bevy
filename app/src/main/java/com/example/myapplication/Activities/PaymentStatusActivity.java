@@ -47,6 +47,7 @@ public class PaymentStatusActivity extends AppCompatActivity {
     //Views
     Button btnUpdatePayment, btnAmountHistory;
     private String projectID;
+    private ImageView ivBack;
     private List<PaymentStatus> statuses = new ArrayList<>();
 
     // Firebase variables
@@ -64,6 +65,12 @@ public class PaymentStatusActivity extends AppCompatActivity {
         initialiseAllViews();
 
         initialiseFirebaseVaraibles();
+        ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         progressBar.setVisibility(View.GONE);
 
         setRecylerView();
@@ -225,6 +232,7 @@ public class PaymentStatusActivity extends AppCompatActivity {
     }
 
     private void initialiseAllViews() {
+        ivBack = findViewById(R.id.payment_status_back);
         btnUpdatePayment = findViewById(R.id.payment_status_update_amount);
         btnAmountHistory = findViewById(R.id.payment_status_amount_history);
         rvPaymentList = findViewById(R.id.payment_status_list);

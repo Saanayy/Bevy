@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ public class ProjectDetailActivity extends AppCompatActivity {
     Button btnPaymentStatus, btnProjectStatus, btnUpdateDetails, btnNotes;
     TextView tvconfirmationDate, tvDeadlienDate, tvAmount, tvCompletionPercent;
     me.zhanghai.android.materialprogressbar.MaterialProgressBar progressBar;
+    ImageView ivBack;
 
     //Firebase variables
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -49,6 +51,12 @@ public class ProjectDetailActivity extends AppCompatActivity {
         progressBar.setVisibility(View.GONE);
         fetchProjectAndSetDefaultData();
 
+        ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         btnPaymentStatus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,6 +135,7 @@ public class ProjectDetailActivity extends AppCompatActivity {
         tvAmount = findViewById(R.id.project_detail_amount);
         tvCompletionPercent = findViewById(R.id.project_detail_completionPercent);
         progressBar = findViewById(R.id.project_detail_progress);
+        ivBack = findViewById(R.id.project_detail_back);
 
     }
 

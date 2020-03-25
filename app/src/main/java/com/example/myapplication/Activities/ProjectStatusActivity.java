@@ -37,7 +37,7 @@ public class ProjectStatusActivity extends AppCompatActivity {
     List<ProjectStatus> statuses = new ArrayList<>();
 
     // Views
-    ImageView ivAdd;
+    ImageView ivAdd, ivBack;
     RecyclerView rvProjectStatusList;
 
     //Firebase
@@ -52,6 +52,13 @@ public class ProjectStatusActivity extends AppCompatActivity {
         projectID = intent.getStringExtra("projectid");
         initialiseAllViews();
         initialiseAllFirebase();
+
+        ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         ivAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,6 +128,7 @@ public class ProjectStatusActivity extends AppCompatActivity {
 
     private void initialiseAllViews() {
         ivAdd = findViewById(R.id.project_status_add);
+        ivBack = findViewById(R.id.project_status_back);
         rvProjectStatusList = findViewById(R.id.project_status_list);
     }
 

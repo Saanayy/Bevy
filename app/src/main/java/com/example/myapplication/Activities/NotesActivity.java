@@ -32,7 +32,7 @@ public class NotesActivity extends AppCompatActivity {
     String uid, projectId;
 
     // Views
-    ImageView ivNewNote;
+    ImageView ivNewNote, ivBack;
     RecyclerView rvNotes;
     RecyclerView.LayoutManager layoutManager;
     NoteAdapter noteAdapter;
@@ -52,6 +52,12 @@ public class NotesActivity extends AppCompatActivity {
         initialiseAllViews();
         initialiseAllFirebaseVariables();
 
+        ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         ivNewNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,6 +114,6 @@ public class NotesActivity extends AppCompatActivity {
     private void initialiseAllViews() {
         ivNewNote = findViewById(R.id.notes_add);
         rvNotes = findViewById(R.id.notes_list);
-
+        ivBack = findViewById(R.id.notes_back);
     }
 }

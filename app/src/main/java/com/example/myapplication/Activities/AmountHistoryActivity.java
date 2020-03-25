@@ -2,6 +2,8 @@ package com.example.myapplication.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,6 +37,7 @@ public class AmountHistoryActivity extends AppCompatActivity {
 
     //Views
     RecyclerView rvAmountHistory;
+    ImageView ivBack;
 
     //Firebase variables
     FirebaseAuth mAuth;
@@ -51,6 +54,12 @@ public class AmountHistoryActivity extends AppCompatActivity {
 
         initialiseFirebaseVaribales();
 
+        ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         setRecylerView();
         fetchData();
         setRecylerView();
@@ -96,5 +105,6 @@ public class AmountHistoryActivity extends AppCompatActivity {
 
     private void initialiseAllViews() {
         rvAmountHistory = findViewById(R.id.amount_history_recycler);
+        ivBack = findViewById(R.id.amount_history_back);
     }
 }
