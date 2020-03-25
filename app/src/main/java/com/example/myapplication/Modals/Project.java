@@ -1,19 +1,14 @@
 package com.example.myapplication.Modals;
 
-import java.util.Date;
-
 public class Project {
     private String projectId;
     private String name;
-    private Date confirmationDate;
+    private String confirmationDate;
     private double amount;
-    private Date deadline;
+    private String deadline;
     private String result;
 
-    public Project() {
-    }
-
-    public Project(String projectId, String name, Date confirmationDate, double amount, Date deadline, String result) {
+    public Project(String projectId, String name, String confirmationDate, double amount, String deadline, String result) {
         this.projectId = projectId;
         this.name = name;
         this.confirmationDate = confirmationDate;
@@ -22,12 +17,7 @@ public class Project {
         this.result = result;
     }
 
-    public String getResult() {
-        return result;
-    }
-
-    public void setResult(String result) {
-        this.result = result;
+    public Project() {
     }
 
     public String getProjectId() {
@@ -46,11 +36,11 @@ public class Project {
         this.name = name;
     }
 
-    public Date getConfirmationDate() {
+    public String getConfirmationDate() {
         return confirmationDate;
     }
 
-    public void setConfirmationDate(Date confirmationDate) {
+    public void setConfirmationDate(String confirmationDate) {
         this.confirmationDate = confirmationDate;
     }
 
@@ -62,11 +52,19 @@ public class Project {
         this.amount = amount;
     }
 
-    public Date getDeadline() {
+    public String getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(Date deadline) {
+    public void setDeadline(String deadline) {
         this.deadline = deadline;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }

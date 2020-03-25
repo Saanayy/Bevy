@@ -79,7 +79,10 @@ public class ProjectDetailActivity extends AppCompatActivity {
         btnUpdateDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(ProjectDetailActivity.this, AddProjectActivity.class);
+                intent.putExtra("projectid", projectId);
+                intent.putExtra("update", true);
+                startActivity(intent);
             }
         });
 

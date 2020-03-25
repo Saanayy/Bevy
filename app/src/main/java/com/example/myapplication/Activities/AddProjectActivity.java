@@ -21,20 +21,24 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class AddProjectActivity extends AppCompatActivity {
 
     // Field variables
     private static final String TAG = "register";
-    String result = "";
+    String result = "", projectId, uid;
     Boolean update;
 
     // Views
@@ -48,6 +52,7 @@ public class AddProjectActivity extends AppCompatActivity {
     private Boolean[] checkBoxes = new Boolean[8];
     private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     private FirebaseAuth mAuth;
+    private java.util.Arrays Arrays;
 
     @Override
     public void onStart() {
@@ -100,11 +105,16 @@ public class AddProjectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_project);
 
+        update = getIntent().getBooleanExtra("update", false);
+        projectId = getIntent().getStringExtra("projectid");
+
         initialiseAllViews();
 
         progressBar.setVisibility(View.GONE);
 
         initaliseFireBaseVariables();
+        if (update == true)
+            setValuesToExistingViews();
 
         initialiseBooleanArray(false);
 
@@ -155,7 +165,51 @@ public class AddProjectActivity extends AppCompatActivity {
 
     }
 
+    private void setValuesToExistingViews() {
+        progressBar.setVisibility(View.VISIBLE);
+        DatabaseReference projectRef = databaseReference.child("users").child(uid).child("projects").child(projectId);
+        projectRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Project project = dataSnapshot.getValue(Project.class);
+                etName.setText(project.getName());
+                etConfDate.setText(project.getConfirmationDate().toString());
+                etAmount.setText(project.getAmount() + "");
+                etDeadLineDate.setText(project.getDeadline().toString());
+                result = project.getResult();
+                setCheckBoxes(result);
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(AddProjectActivity.this, "Fetching project details Cancelled", Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void setCheckBoxes(String result) {
+        List<String> checkList = Arrays.asList(result.split(","));
+
+        for (int i = 0; i < checkBoxes.length; i++) {
+            checkBoxes[i] = (checkList.get(i).equalsIgnoreCase("true") == true) ? true : false;
+        }
+//        Toast.makeText(this, ""+checkBoxes[0], Toast.LENGTH_SHORT).show();
+
+        ((CheckBox) findViewById(R.id.checkbox_android)).setChecked(checkBoxes[0]);
+        ((CheckBox) findViewById(R.id.checkbox_website)).setChecked(checkBoxes[1]);
+        ((CheckBox) findViewById(R.id.checkbox_admin)).setChecked(checkBoxes[2]);
+        ((CheckBox) findViewById(R.id.checkbox_maintainance)).setChecked(checkBoxes[3]);
+        ((CheckBox) findViewById(R.id.checkbox_deployment)).setChecked(checkBoxes[4]);
+        ((CheckBox) findViewById(R.id.checkbox_logo)).setChecked(checkBoxes[5]);
+        ((CheckBox) findViewById(R.id.checkbox_uiux)).setChecked(checkBoxes[6]);
+        ((CheckBox) findViewById(R.id.checkbox_cms)).setChecked(checkBoxes[7]);
+
+    }
+
     private void convertBooleanToString() {
+        result = "";
         for (int i = 0; i < 8; i++) {
             result = result + ((checkBoxes[i]) ? "true," : "false,");
         }
@@ -177,11 +231,17 @@ public class AddProjectActivity extends AppCompatActivity {
             // to the projects node.
             String uid = mAuth.getUid();
             DatabaseReference userProjectRef = databaseReference.child("users").child(uid).child("projects");
-            String userProjectKey = userProjectRef.push().getKey();
+
+            String userProjectKey;
+
+            if (update == true)
+                userProjectKey = projectId;
+            else
+                userProjectKey = userProjectRef.push().getKey();
 
             final DatabaseReference projectRef = databaseReference.child("projects").child(userProjectKey);
             // create an object from the data.
-            final Project project = new Project(userProjectKey, name, confDate, Double.parseDouble(amount), deadlinedate, result);
+            final Project project = new Project(userProjectKey, name, conf, Double.parseDouble(amount), deadline, result);
             // Add the project to the user node.
             userProjectRef.child(userProjectKey).setValue(project)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -247,6 +307,7 @@ public class AddProjectActivity extends AppCompatActivity {
     private void initaliseFireBaseVariables() {
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+        uid = mAuth.getUid();
     }
 
     private void initialiseAllViews() {

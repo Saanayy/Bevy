@@ -40,7 +40,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectViewHolder> {
     public void onBindViewHolder(@NonNull final ProjectViewHolder holder, int position) {
         final Project project = projects.get(position);
         holder.tvName.setText(project.getName());
-        holder.tvDate.setText(project.getConfirmationDate().toString());
+        holder.tvDate.setText(project.getConfirmationDate() + "");
         holder.rvMainLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

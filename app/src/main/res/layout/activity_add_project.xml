@@ -194,7 +194,7 @@
                 android:layout_margin="16dp"
                 android:layout_toLeftOf="@+id/addproj_deadlinedate_icon"
                 android:enabled="false"
-                android:hint="Confirmation Date" />
+                android:hint="Deadline Date" />
 
             <ImageView
                 android:id="@+id/addproj_deadlinedate_icon"
