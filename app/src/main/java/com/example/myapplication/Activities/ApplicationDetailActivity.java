@@ -1,7 +1,6 @@
 package com.example.myapplication.Activities;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -94,7 +93,6 @@ public class ApplicationDetailActivity extends AppCompatActivity {
                 tasks.clear();
                 for (DataSnapshot taskSnapshot : dataSnapshot.getChildren()) {
                     Task task = taskSnapshot.getValue(Task.class);
-                    Log.d(TAG, "onDataChange: " + task.getName());
                     tasks.add(task);
                 }
                 taskAdapter.notifyDataSetChanged();
