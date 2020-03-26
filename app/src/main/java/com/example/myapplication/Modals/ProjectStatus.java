@@ -8,15 +8,18 @@ public class ProjectStatus implements Comparable<ProjectStatus> {
     String name, date;
     int completionPercentage;
     String projectStatusKey;
+    int taskCount, completeTaskCount;
 
     public ProjectStatus() {
     }
 
-    public ProjectStatus(String name, String date, int completionPercentage, String projectStatusKey) {
+    public ProjectStatus(String name, String date, int completionPercentage, String projectStatusKey, int taskCount, int completeTaskCount) {
         this.name = name;
         this.date = date;
         this.completionPercentage = completionPercentage;
         this.projectStatusKey = projectStatusKey;
+        this.taskCount = taskCount;
+        this.completeTaskCount = completeTaskCount;
     }
 
     public String getProjectStatusKey() {
@@ -25,6 +28,22 @@ public class ProjectStatus implements Comparable<ProjectStatus> {
 
     public void setProjectStatusKey(String projectStatusKey) {
         this.projectStatusKey = projectStatusKey;
+    }
+
+    public int getTaskCount() {
+        return taskCount;
+    }
+
+    public void setTaskCount(int taskCount) {
+        this.taskCount = taskCount;
+    }
+
+    public int getCompleteTaskCount() {
+        return completeTaskCount;
+    }
+
+    public void setCompleteTaskCount(int completeTaskCount) {
+        this.completeTaskCount = completeTaskCount;
     }
 
     public String getName() {

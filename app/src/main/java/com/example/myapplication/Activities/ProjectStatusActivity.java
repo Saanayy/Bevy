@@ -221,7 +221,7 @@ public class ProjectStatusActivity extends AppCompatActivity {
                 } else {
                     DatabaseReference projectStatusRef = databaseReference.child("users").child(uid).child("projects").child(projectID).child("projectstatus");
                     String key = projectStatusRef.push().getKey();
-                    ProjectStatus projectStatus = new ProjectStatus(name, date, 80, key);
+                    ProjectStatus projectStatus = new ProjectStatus(name, date, 0, key, 0, 0);
                     projectStatusRef.child(key).setValue(projectStatus)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override

@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Adapters.TaskAdapter;
+import com.example.myapplication.Modals.ProjectStatus;
 import com.example.myapplication.Modals.Task;
 import com.example.myapplication.R;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -54,13 +55,11 @@ public class ApplicationDetailActivity extends AppCompatActivity {
     RecyclerView rvTasks;
     RecyclerView.LayoutManager layoutManager;
     TaskAdapter taskAdapter;
-    private TextView tvSearch, tvSort;
-    private EditText etSearchText;
-
     //Firebase variables
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     FirebaseAuth mAuth;
-
+    private TextView tvSearch, tvSort;
+    private EditText etSearchText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -223,6 +222,8 @@ public class ApplicationDetailActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     Toast.makeText(ApplicationDetailActivity.this, "Task Addition successful", Toast.LENGTH_SHORT).show();
+                                    getTaskCountAndUpdateValues();
+
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
@@ -246,6 +247,54 @@ public class ApplicationDetailActivity extends AppCompatActivity {
         Dialog dialog = alert.create();
         dialog.show();
     }
+
+    private void getTaskCountAndUpdateValues() {
+        final DatabaseReference statusRef = databaseReference.child("users").child(uid).child("projects").child(projectID).child("projectstatus").child(statusID);
+        statusRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ProjectStatus projectStatus = dataSnapshot.getValue(ProjectStatus.class);
+                int taskCount = projectStatus.getTaskCount();
+                int completionPercentage = projectStatus.getCompletionPercentage();
+                int taskCompleted = projectStatus.getCompleteTaskCount();
+                taskCount++;
+                completionPercentage = (int) ((taskCompleted / (taskCount * 1.0)) * 100);
+                statusRef.child("taskCount").setValue(taskCount)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(ApplicationDetailActivity.this, "Tast count incremented", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(ApplicationDetailActivity.this, "Task increment failed", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                statusRef.child("completionPercentage").setValue(completionPercentage)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(ApplicationDetailActivity.this, "Completion percentage set", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(ApplicationDetailActivity.this, "Completion percentage set failed", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(ApplicationDetailActivity.this, "Setting completion statistics failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     private void setDateFromListner(final EditText editText) {
         Calendar now = Calendar.getInstance();
@@ -292,7 +341,7 @@ public class ApplicationDetailActivity extends AppCompatActivity {
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         rvTasks.setLayoutManager(layoutManager);
-        taskAdapter = new TaskAdapter(this, tasks);
+        taskAdapter = new TaskAdapter(this, tasks, projectID, statusID);
         rvTasks.hasFixedSize();
         rvTasks.setAdapter(taskAdapter);
         rvTasks.addItemDecoration(new DividerItemDecoration(rvTasks.getContext(), DividerItemDecoration.VERTICAL));
