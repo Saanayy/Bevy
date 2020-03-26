@@ -1,11 +1,18 @@
 package com.example.myapplication.Activities;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class ApplicationDetailActivity extends AppCompatActivity {
@@ -34,7 +42,7 @@ public class ApplicationDetailActivity extends AppCompatActivity {
     String uid, projectID, statusID;
 
     // Views
-    ImageView ivNewTask;
+    ImageView ivNewTask, ivBack;
     RecyclerView rvTasks;
     RecyclerView.LayoutManager layoutManager;
     TaskAdapter taskAdapter;
@@ -53,10 +61,15 @@ public class ApplicationDetailActivity extends AppCompatActivity {
         initialiseAllViews();
         initialiseAllFirebaseVariables();
 
-//        Log.d(TAG, "onCreate: "+projectID + " "+ statusID);
         fetchData();
         setRecylerView();
 
+        ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         ivNewTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,23 +79,94 @@ public class ApplicationDetailActivity extends AppCompatActivity {
     }
 
     private void addTask() {
-        DatabaseReference taskRef = databaseReference.child("users").child(uid).child("projects").child(projectID).child("projectstatus").child(statusID).child("tasks");
-        String key = taskRef.push().getKey();
-        // Todo: create dynamic task here
-        Task task = new Task("Task1", "20/10/2010", true, key);
-        taskRef.child(key).setValue(task)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+        askForDetailsAndMakeTask();
+    }
+
+    private void askForDetailsAndMakeTask() {
+        final LayoutInflater inflater = getLayoutInflater();
+
+        final View alertLayout = inflater.inflate(R.layout.add_task_dialog, null);
+
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setView(alertLayout);
+
+        final EditText etName = alertLayout.findViewById(R.id.dialog_task_name);
+        final EditText etDate = alertLayout.findViewById(R.id.dialog_task_date);
+        final ImageView ivCal = alertLayout.findViewById(R.id.dialog_task_date_icon);
+
+        etDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ivCal.performClick();
+            }
+        });
+
+        ivCal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDateFromListner(etDate);
+            }
+        });
+
+        alert.setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
+            public void onClick(final DialogInterface dialog, int id) {
+                // Todo: check for numeric inconsistencies.
+                String name = etName.getText().toString().trim();
+                String date = etDate.getText().toString().trim();
+
+                if (name.length() == 0 || date.length() == 0) {
+                    Toast.makeText(ApplicationDetailActivity.this, "Empty fields, Not sent to database", Toast.LENGTH_SHORT).show();
+                } else {
+                    DatabaseReference taskRef = databaseReference.child("users").child(uid).child("projects").child(projectID).child("projectstatus").child(statusID).child("tasks");
+                    String key = taskRef.push().getKey();
+                    // Todo: create dynamic task here
+                    Task task = new Task(name, date, false, key);
+                    taskRef.child(key).setValue(task)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(ApplicationDetailActivity.this, "Task Addition successful", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(ApplicationDetailActivity.this, "Task Addition failed", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                }
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+
+
+        alert.setCancelable(false);
+        Dialog dialog = alert.create();
+        dialog.show();
+    }
+
+    private void setDateFromListner(final EditText editText) {
+        Calendar now = Calendar.getInstance();
+
+        DatePickerDialog dialog = new DatePickerDialog(
+                ApplicationDetailActivity.this,
+                new DatePickerDialog.OnDateSetListener() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(ApplicationDetailActivity.this, "Task Addition successful", Toast.LENGTH_SHORT).show();
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        String dateStr = dayOfMonth + "/" + monthOfYear + "/" + year;
+                        editText.setText(dateStr);
                     }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(ApplicationDetailActivity.this, "Task Addition failed", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                },
+                now.get(Calendar.YEAR),
+                now.get(Calendar.MONTH),
+                now.get(Calendar.DAY_OF_MONTH));
+
+        dialog.show();
     }
 
     private void fetchData() {
@@ -125,6 +209,6 @@ public class ApplicationDetailActivity extends AppCompatActivity {
     private void initialiseAllViews() {
         ivNewTask = findViewById(R.id.application_detail_add);
         rvTasks = findViewById(R.id.application_detail_list);
-
+        ivBack = findViewById(R.id.application_detail_back);
     }
 }

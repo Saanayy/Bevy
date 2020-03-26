@@ -7,17 +7,27 @@ public class Project {
     private double amount;
     private String deadline;
     private String result;
+    private double collectedAmount;
 
-    public Project(String projectId, String name, String confirmationDate, double amount, String deadline, String result) {
+    public Project(String projectId, String name, String confirmationDate, double amount, String deadline, String result, double collectedAmount) {
         this.projectId = projectId;
         this.name = name;
         this.confirmationDate = confirmationDate;
         this.amount = amount;
         this.deadline = deadline;
         this.result = result;
+        this.collectedAmount = collectedAmount;
     }
 
     public Project() {
+    }
+
+    public double getCollectedAmount() {
+        return collectedAmount;
+    }
+
+    public void setCollectedAmount(double collectedAmount) {
+        this.collectedAmount = collectedAmount;
     }
 
     public String getProjectId() {

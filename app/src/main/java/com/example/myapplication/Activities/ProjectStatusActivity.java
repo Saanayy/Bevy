@@ -1,12 +1,19 @@
 package com.example.myapplication.Activities;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,6 +32,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class ProjectStatusActivity extends AppCompatActivity {
@@ -71,23 +79,79 @@ public class ProjectStatusActivity extends AppCompatActivity {
     }
 
     private void addProjectStatus() {
-        DatabaseReference projectStatusRef = databaseReference.child("users").child(uid).child("projects").child(projectID).child("projectstatus");
-        String key = projectStatusRef.push().getKey();
-        //Todo: create projectstatus dynamic here
-        ProjectStatus projectStatus = new ProjectStatus("android", "20/10/1290", 80, key);
-        projectStatusRef.child(key).setValue(projectStatus)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(ProjectStatusActivity.this, "Added status successfully", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(ProjectStatusActivity.this, "Adding status failed.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+
+        askForDetailsAndMakeProjectStatus();
+
+
+    }
+
+    private void askForDetailsAndMakeProjectStatus() {
+        final LayoutInflater inflater = getLayoutInflater();
+
+        final View alertLayout = inflater.inflate(R.layout.project_status_dialog, null);
+
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setView(alertLayout);
+
+        final EditText etName = alertLayout.findViewById(R.id.dialog_project_status_name);
+        final EditText etAmount = alertLayout.findViewById(R.id.dialog_project_status_amount);
+        final EditText etDate = alertLayout.findViewById(R.id.dialog_project_status_date);
+        final ImageView ivCal = alertLayout.findViewById(R.id.dialog_project_status_date_icon);
+
+        etDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ivCal.performClick();
+            }
+        });
+
+        ivCal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDateFromListner(etDate);
+            }
+        });
+
+        alert.setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
+            public void onClick(final DialogInterface dialog, int id) {
+                // Todo: check for numeric inconsistencies.
+                String name = etName.getText().toString().trim();
+                String amount = etAmount.getText().toString().trim();
+                String date = etDate.getText().toString().trim();
+
+                if (name.length() == 0 || date.length() == 0 || amount.length() == 0) {
+                    Toast.makeText(ProjectStatusActivity.this, "Empty fields, Not sent to database", Toast.LENGTH_SHORT).show();
+                } else {
+                    DatabaseReference projectStatusRef = databaseReference.child("users").child(uid).child("projects").child(projectID).child("projectstatus");
+                    String key = projectStatusRef.push().getKey();
+                    ProjectStatus projectStatus = new ProjectStatus(name, date, 80, key);
+                    projectStatusRef.child(key).setValue(projectStatus)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(ProjectStatusActivity.this, "Added status successfully", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(ProjectStatusActivity.this, "Adding status failed.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                }
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+
+
+        alert.setCancelable(false);
+        Dialog dialog = alert.create();
+        dialog.show();
     }
 
     private void fetchData() {
@@ -118,6 +182,25 @@ public class ProjectStatusActivity extends AppCompatActivity {
         rvProjectStatusList.hasFixedSize();
         rvProjectStatusList.setAdapter(mAdapter);
         rvProjectStatusList.addItemDecoration(new DividerItemDecoration(rvProjectStatusList.getContext(), DividerItemDecoration.VERTICAL));
+    }
+
+    private void setDateFromListner(final EditText editText) {
+        Calendar now = Calendar.getInstance();
+
+        DatePickerDialog dialog = new DatePickerDialog(
+                ProjectStatusActivity.this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        String dateStr = dayOfMonth + "/" + monthOfYear + "/" + year;
+                        editText.setText(dateStr);
+                    }
+                },
+                now.get(Calendar.YEAR),
+                now.get(Calendar.MONTH),
+                now.get(Calendar.DAY_OF_MONTH));
+
+        dialog.show();
     }
 
     private void initialiseAllFirebase() {

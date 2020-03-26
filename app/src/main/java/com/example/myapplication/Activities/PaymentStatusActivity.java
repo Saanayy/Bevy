@@ -1,13 +1,17 @@
 package com.example.myapplication.Activities;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.Adapters.PaymentStatusAdapter;
 import com.example.myapplication.Modals.History;
 import com.example.myapplication.Modals.PaymentStatus;
+import com.example.myapplication.Modals.Project;
 import com.example.myapplication.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,6 +36,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class PaymentStatusActivity extends AppCompatActivity {
@@ -49,6 +55,7 @@ public class PaymentStatusActivity extends AppCompatActivity {
     private String projectID;
     private ImageView ivBack;
     private List<PaymentStatus> statuses = new ArrayList<>();
+    private TextView tvTotalAmount, tvCollectedAmount;
 
     // Firebase variables
     FirebaseAuth mAuth;
@@ -101,24 +108,80 @@ public class PaymentStatusActivity extends AppCompatActivity {
     }
 
     private void addPayment() {
-        DatabaseReference paymentRef = databaseReference.child("users").child(uid).child("projects").child(projectID).child("paymentstatus");
-        String key = paymentRef.push().getKey();
-        //Todo: Add payment status here
-        PaymentStatus paymentStatus = new PaymentStatus("project1", "100", "10/12/1020", false, key);
 
-        paymentRef.child(key).setValue(paymentStatus)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(PaymentStatusActivity.this, "Project Added", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(PaymentStatusActivity.this, "Project Addition Failed", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        //Todo: Add payment status here
+        askForDetailsAndMakePaymentStatus();
+
+    }
+
+    private void askForDetailsAndMakePaymentStatus() {
+        final LayoutInflater inflater = getLayoutInflater();
+
+        final View alertLayout = inflater.inflate(R.layout.payment_status_dialog, null);
+
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setView(alertLayout);
+
+        final EditText etName = alertLayout.findViewById(R.id.dialog_payment_status_name);
+        final EditText etAmount = alertLayout.findViewById(R.id.dialog_payment_status_amount);
+        final EditText etDate = alertLayout.findViewById(R.id.dialog_payment_status_date);
+        final ImageView ivCal = alertLayout.findViewById(R.id.dialog_payment_status_date_icon);
+
+        etDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ivCal.performClick();
+            }
+        });
+
+        ivCal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDateFromListner(etDate);
+            }
+        });
+
+        alert.setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
+            public void onClick(final DialogInterface dialog, int id) {
+                // Todo: check for numeric inconsistencies.
+                String name = etName.getText().toString().trim();
+                String amount = etAmount.getText().toString().trim();
+                String date = etDate.getText().toString().trim();
+
+                if (name.length() == 0 || date.length() == 0 || amount.length() == 0) {
+                    Toast.makeText(PaymentStatusActivity.this, "Empty fields, Not sent to database", Toast.LENGTH_SHORT).show();
+                } else {
+                    DatabaseReference paymentRef = databaseReference.child("users").child(uid).child("projects").child(projectID).child("paymentstatus");
+                    String key = paymentRef.push().getKey();
+                    PaymentStatus paymentStatus = new PaymentStatus(name, amount, date, false, key);
+
+                    paymentRef.child(key).setValue(paymentStatus)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(PaymentStatusActivity.this, "Payment Added", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(PaymentStatusActivity.this, "Payment Addition Failed", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                }
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+
+
+        alert.setCancelable(false);
+        Dialog dialog = alert.create();
+        dialog.show();
     }
 
     private void fetchData() {
@@ -144,13 +207,30 @@ public class PaymentStatusActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
             }
         });
+
+
+        DatabaseReference projectRef = databaseReference.child("users").child(uid).child("projects").child(projectID);
+        projectRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Project project = dataSnapshot.getValue(Project.class);
+                tvTotalAmount.setText(project.getAmount() + "");
+                tvCollectedAmount.setText(project.getCollectedAmount() + "");
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void setRecylerView() {
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         rvPaymentList.setLayoutManager(layoutManager);
-        mAdapter = new PaymentStatusAdapter(this, statuses);
+        mAdapter = new PaymentStatusAdapter(this, statuses, projectID);
         rvPaymentList.hasFixedSize();
         rvPaymentList.setAdapter(mAdapter);
         rvPaymentList.addItemDecoration(new DividerItemDecoration(rvPaymentList.getContext(), DividerItemDecoration.VERTICAL));
@@ -170,34 +250,38 @@ public class PaymentStatusActivity extends AppCompatActivity {
     }
 
     private void createDialog() {
-        LayoutInflater inflater = getLayoutInflater();
-        final View alertLayout = inflater.inflate(R.layout.update_payment_dialog, null);
+        final LayoutInflater inflater = getLayoutInflater();
 
-        final EditText etAmount = alertLayout.findViewById(R.id.dialog_payment_amount);
-        Button btnSave = alertLayout.findViewById(R.id.dialog_payment_save);
+        final View alertLayout = inflater.inflate(R.layout.update_payment_dialog, null);
 
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setView(alertLayout);
-//        btnSave.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(PaymentStatus.this, "Ho gaya", Toast.LENGTH_SHORT).show();
-//
-//            }
-//        });
+
+        final EditText etAmount = alertLayout.findViewById(R.id.dialog_payment_amount);
+        final EditText etDate = alertLayout.findViewById(R.id.dialog_payment_date);
+
+        etDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDateFromListner(etDate);
+            }
+        });
+
         alert.setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, int id) {
-                // Todo: check for numeric inconsistencies.
+//                // Todo: check for numeric inconsistencies.
                 String val = etAmount.getText().toString().trim();
-                if (val.length() == 0) {
-                    Toast.makeText(PaymentStatusActivity.this, "wrong val", Toast.LENGTH_SHORT).show();
+                String date = etDate.getText().toString().trim();
+
+                if (val.length() == 0 || date.length() == 0) {
+                    Toast.makeText(PaymentStatusActivity.this, "Empty fields, Not sent to database", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(PaymentStatusActivity.this, "val " + val, Toast.LENGTH_SHORT).show();
                     // The code to push updates to the database here
                     //Toast.makeText(PaymentStatus.this, ""+ uid + " " + projectID, Toast.LENGTH_SHORT).show();
                     DatabaseReference historyRef = databaseReference.child("users").child(uid).child("projects").child(projectID).child("amounthistory");
 
-                    History history = new History("20/10/2016", "100000");
+                    History history = new History(date, val);
                     historyRef.push().setValue(history)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
@@ -213,8 +297,22 @@ public class PaymentStatusActivity extends AppCompatActivity {
                                 }
                             });
 
-                }
+                    DatabaseReference projectRef = databaseReference.child("users").child(uid).child("projects").child(projectID);
+                    projectRef.child("amount").setValue(Double.parseDouble(val))
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(PaymentStatusActivity.this, "Amount updated", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(PaymentStatusActivity.this, "Amount updation failed", Toast.LENGTH_SHORT).show();
+                                }
+                            });
 
+                }
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -225,9 +323,7 @@ public class PaymentStatusActivity extends AppCompatActivity {
 
 
         alert.setCancelable(false);
-
-
-        AlertDialog dialog = alert.create();
+        Dialog dialog = alert.create();
         dialog.show();
     }
 
@@ -238,6 +334,28 @@ public class PaymentStatusActivity extends AppCompatActivity {
         rvPaymentList = findViewById(R.id.payment_status_list);
         progressBar = findViewById(R.id.payment_status_progress);
         ivAdd = findViewById(R.id.payment_status_add);
+        tvCollectedAmount = findViewById(R.id.payment_status_collected_amount);
+        tvTotalAmount = findViewById(R.id.payment_status_total_amount);
+
+    }
+
+    private void setDateFromListner(final EditText editText) {
+        Calendar now = Calendar.getInstance();
+
+        DatePickerDialog dialog = new DatePickerDialog(
+                PaymentStatusActivity.this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        String dateStr = dayOfMonth + "/" + monthOfYear + "/" + year;
+                        editText.setText(dateStr);
+                    }
+                },
+                now.get(Calendar.YEAR),
+                now.get(Calendar.MONTH),
+                now.get(Calendar.DAY_OF_MONTH));
+
+        dialog.show();
     }
 
     private void initialiseFirebaseVaraibles() {

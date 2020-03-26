@@ -16,15 +16,16 @@
         android:id="@+id/dialog_payment_amount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:inputType="number"
         android:layout_below="@+id/dialog_payment_placeholder"
         android:layout_alignStart="@+id/dialog_payment_placeholder" />
 
-    <Button
-        android:id="@+id/dialog_payment_save"
+    <EditText
+        android:id="@+id/dialog_payment_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusable="false"
         android:layout_below="@+id/dialog_payment_amount"
-        android:text="Save"
-        android:visibility="gone" />
+        android:hint="Date" />
 
 </RelativeLayout>

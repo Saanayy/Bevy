@@ -1,5 +1,8 @@
 package com.example.myapplication.Utilities;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 public class UtilityFunctions {
@@ -16,5 +19,13 @@ public class UtilityFunctions {
 
     public static boolean isValidPassword(String password) {
         return password.length() > 6;
+    }
+
+    public static String getCurrentDate() {
+        Date c = Calendar.getInstance().getTime();
+
+        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+        String formattedDate = df.format(c);
+        return formattedDate;
     }
 }

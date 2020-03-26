@@ -26,7 +26,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,11 +43,10 @@ public class AddProjectActivity extends AppCompatActivity {
     // Views
     me.zhanghai.android.materialprogressbar.MaterialProgressBar progressBar;
     EditText etName, etConfDate, etAmount, etDeadLineDate;
-    ImageView ivConfCal, ivdeadLineCal;
+    ImageView ivConfCal, ivdeadLineCal, ivBack;
     Button btnAdd;
 
     // Firebase Variables
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
     private Boolean[] checkBoxes = new Boolean[8];
     private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     private FirebaseAuth mAuth;
@@ -110,6 +108,13 @@ public class AddProjectActivity extends AppCompatActivity {
 
         initialiseAllViews();
 
+        ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
         progressBar.setVisibility(View.GONE);
 
         initaliseFireBaseVariables();
@@ -160,6 +165,21 @@ public class AddProjectActivity extends AppCompatActivity {
                 addProjectToDatabase(name, deadline, amount, conf, confDate, deadlinedate, result);
                 Log.d(TAG, "onClick: " + result);
 
+            }
+        });
+
+        etConfDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ivConfCal.performClick();
+            }
+        });
+
+
+        etDeadLineDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ivdeadLineCal.performClick();
             }
         });
 
@@ -241,7 +261,7 @@ public class AddProjectActivity extends AppCompatActivity {
 
             final DatabaseReference projectRef = databaseReference.child("projects").child(userProjectKey);
             // create an object from the data.
-            final Project project = new Project(userProjectKey, name, conf, Double.parseDouble(amount), deadline, result);
+            final Project project = new Project(userProjectKey, name, conf, Double.parseDouble(amount), deadline, result, 0);
             // Add the project to the user node.
             userProjectRef.child(userProjectKey).setValue(project)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -319,7 +339,7 @@ public class AddProjectActivity extends AppCompatActivity {
         ivConfCal = findViewById(R.id.addproj_confdate_icon);
         ivdeadLineCal = findViewById(R.id.addproj_deadlinedate_icon);
         btnAdd = findViewById(R.id.addproj_add);
-
+        ivBack = findViewById(R.id.addproj_back);
     }
 
 }

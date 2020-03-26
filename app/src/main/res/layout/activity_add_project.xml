@@ -34,7 +34,7 @@
             android:textSize="18sp" />
 
         <ImageView
-            android:id="@+id/main_add"
+            android:id="@+id/addproj_back"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_alignParentStart="true"
@@ -71,8 +71,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:focusable="false"
                 android:layout_toLeftOf="@+id/addproj_confdate_icon"
-                android:enabled="false"
                 android:hint="Confirmation Date" />
 
             <ImageView
@@ -192,8 +192,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:focusable="false"
                 android:layout_toLeftOf="@+id/addproj_deadlinedate_icon"
-                android:enabled="false"
                 android:hint="Deadline Date" />
 
             <ImageView
