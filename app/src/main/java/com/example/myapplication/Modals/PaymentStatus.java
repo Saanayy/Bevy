@@ -1,6 +1,10 @@
 package com.example.myapplication.Modals;
 
-public class PaymentStatus {
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class PaymentStatus implements Comparable<PaymentStatus> {
     String name, amount, date;
     boolean check;
     String paymentStatusKey;
@@ -54,5 +58,24 @@ public class PaymentStatus {
 
     public void setCheck(boolean check) {
         this.check = check;
+    }
+
+    @Override
+    public int compareTo(PaymentStatus o) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date start = null, end = null;
+        try {
+            start = sdf.parse(this.getDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            end = sdf.parse(o.getDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if (start.before(end)) return -10;
+        else return 10;
+//        return  this.getName().compareTo(o.getName());
     }
 }

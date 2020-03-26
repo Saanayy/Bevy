@@ -24,7 +24,7 @@ public class UtilityFunctions {
     public static String getCurrentDate() {
         Date c = Calendar.getInstance().getTime();
 
-        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         String formattedDate = df.format(c);
         return formattedDate;
     }

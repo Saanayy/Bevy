@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.Modals.Note;
 import com.example.myapplication.R;
+import com.example.myapplication.Utilities.UtilityFunctions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -71,7 +72,7 @@ public class AddNoteActivity extends AppCompatActivity {
 
             final String keynotesRef = notesRef.push().getKey();
 
-            final Note note = new Note(keynotesRef, heading, desc);
+            final Note note = new Note(keynotesRef, heading, desc, UtilityFunctions.getCurrentDate());
             userNotesRef.child(keynotesRef).setValue(note)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

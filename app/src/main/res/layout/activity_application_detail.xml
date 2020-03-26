@@ -40,6 +40,16 @@
             android:layout_centerVertical="true"
             android:clickable="true"
             android:src="@drawable/ic_add_circle_outline_black_24dp" />
+
+        <TextView
+            android:id="@+id/application_detail_sort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@+id/application_detail_add"
+            android:text="Sort"
+            android:textSize="18dp" />
     </RelativeLayout>
 
     <RelativeLayout

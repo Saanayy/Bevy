@@ -5,12 +5,14 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +39,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class PaymentStatusActivity extends AppCompatActivity {
@@ -49,13 +53,17 @@ public class PaymentStatusActivity extends AppCompatActivity {
     RecyclerView rvPaymentList;
     ImageView ivAdd;
     private String uid;
+    List<PaymentStatus> newStatuses = new ArrayList<>();
+    List<PaymentStatus> allStatuses = new ArrayList<>();
+    boolean reset = false;
+    private List<PaymentStatus> statuses = new ArrayList<>();
 
     //Views
     Button btnUpdatePayment, btnAmountHistory;
     private String projectID;
     private ImageView ivBack;
-    private List<PaymentStatus> statuses = new ArrayList<>();
-    private TextView tvTotalAmount, tvCollectedAmount;
+    private TextView tvTotalAmount, tvCollectedAmount, tvSearch, tvSort;
+    private EditText etSearchText;
 
     // Firebase variables
     FirebaseAuth mAuth;
@@ -104,6 +112,93 @@ public class PaymentStatusActivity extends AppCompatActivity {
                 addPayment();
             }
         });
+
+        tvSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewChoiceDialog();
+            }
+        });
+
+        tvSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!reset)
+                    doSearch();
+                else {
+                    reset = false;
+                    etSearchText.setText("");
+                    tvSearch.setText("OK");
+                    statuses.clear();
+                    statuses.addAll(allStatuses);
+                    newStatuses.clear();
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+    }
+
+    private void doSearch() {
+        String search = etSearchText.getText().toString().trim();
+        if (search.length() == 0) {
+            Toast.makeText(this, "Enter some text to search", Toast.LENGTH_SHORT).show();
+        } else {
+            reset = true;
+            tvSearch.setText("RESET");
+            newStatuses = new ArrayList<>(statuses);
+            statuses.clear();
+            Log.d(TAG, "doSearch: " + newStatuses.size());
+            for (int i = 0; i < newStatuses.size(); i++) {
+                String name = newStatuses.get(i).getName();
+                Log.d(TAG, "doSearch: " + newStatuses.size());
+                if (name.contains(search)) {
+                    statuses.add(newStatuses.get(i));
+                    Log.d(TAG, "doSearch: " + newStatuses.get(i).getName());
+                }
+            }
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private void viewChoiceDialog() {
+        final LayoutInflater inflater = getLayoutInflater();
+
+        final View alertLayout = inflater.inflate(R.layout.sort_choice_dialog, null);
+
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setView(alertLayout);
+
+        final RadioButton rbDateAsc = alertLayout.findViewById(R.id.sort_dialog_date_asc);
+        final RadioButton rbDateDsc = alertLayout.findViewById(R.id.sort_dialog_date_dsc);
+        final RadioButton rbName = alertLayout.findViewById(R.id.sort_dialog_name);
+
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(final DialogInterface dialog, int id) {
+                if (rbDateAsc.isChecked())
+                    Collections.sort(statuses);
+                else if (rbDateDsc.isChecked())
+                    Collections.sort(statuses, Collections.<PaymentStatus>reverseOrder());
+                else {
+                    Comparator<PaymentStatus> compareByName = new Comparator<PaymentStatus>() {
+                        @Override
+                        public int compare(PaymentStatus o1, PaymentStatus o2) {
+                            return o1.getName().compareTo(o2.getName());
+                        }
+                    };
+                    Collections.sort(statuses, compareByName);
+                }
+                mAdapter.notifyDataSetChanged();
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+
+        Dialog d = alert.create();
+        d.show();
 
     }
 
@@ -192,10 +287,12 @@ public class PaymentStatusActivity extends AppCompatActivity {
         paymentRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                allStatuses.clear();
                 statuses.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     PaymentStatus paymentStatus = postSnapshot.getValue(PaymentStatus.class);
                     statuses.add(paymentStatus);
+                    allStatuses.add(paymentStatus);
                 }
                 progressBar.setVisibility(View.GONE);
                 mAdapter.notifyDataSetChanged();
@@ -336,7 +433,9 @@ public class PaymentStatusActivity extends AppCompatActivity {
         ivAdd = findViewById(R.id.payment_status_add);
         tvCollectedAmount = findViewById(R.id.payment_status_collected_amount);
         tvTotalAmount = findViewById(R.id.payment_status_total_amount);
-
+        tvSearch = findViewById(R.id.payment_status_searchOK);
+        tvSort = findViewById(R.id.payment_status_sort);
+        etSearchText = findViewById(R.id.payment_status_searchtext);
     }
 
     private void setDateFromListner(final EditText editText) {

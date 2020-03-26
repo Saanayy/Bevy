@@ -5,11 +5,14 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,6 +36,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ProjectStatusActivity extends AppCompatActivity {
@@ -43,10 +48,15 @@ public class ProjectStatusActivity extends AppCompatActivity {
     ProjectStatusAdapter mAdapter;
     RecyclerView.LayoutManager layoutManager;
     List<ProjectStatus> statuses = new ArrayList<>();
+    List<ProjectStatus> newStatuses = new ArrayList<>();
+    List<ProjectStatus> allStatuses = new ArrayList<>();
+    boolean reset = false;
 
     // Views
     ImageView ivAdd, ivBack;
     RecyclerView rvProjectStatusList;
+    private TextView tvSearch, tvSort;
+    private EditText etSearchText;
 
     //Firebase
     FirebaseAuth mAuth;
@@ -76,6 +86,93 @@ public class ProjectStatusActivity extends AppCompatActivity {
         });
         fetchData();
         setRecylerView();
+
+        tvSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewChoiceDialog();
+            }
+        });
+
+        tvSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!reset)
+                    doSearch();
+                else {
+                    reset = false;
+                    etSearchText.setText("");
+                    tvSearch.setText("OK");
+                    statuses.clear();
+                    statuses.addAll(allStatuses);
+                    newStatuses.clear();
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
+    private void doSearch() {
+        String search = etSearchText.getText().toString().trim();
+        if (search.length() == 0) {
+            Toast.makeText(this, "Enter some text to search", Toast.LENGTH_SHORT).show();
+        } else {
+            reset = true;
+            tvSearch.setText("RESET");
+            newStatuses = new ArrayList<>(statuses);
+            statuses.clear();
+            Log.d(TAG, "doSearch: " + newStatuses.size());
+            for (int i = 0; i < newStatuses.size(); i++) {
+                String name = newStatuses.get(i).getName();
+                Log.d(TAG, "doSearch: " + newStatuses.size());
+                if (name.contains(search)) {
+                    statuses.add(newStatuses.get(i));
+                    Log.d(TAG, "doSearch: " + newStatuses.get(i).getName());
+                }
+            }
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private void viewChoiceDialog() {
+        final LayoutInflater inflater = getLayoutInflater();
+
+        final View alertLayout = inflater.inflate(R.layout.sort_choice_dialog, null);
+
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setView(alertLayout);
+
+        final RadioButton rbDateAsc = alertLayout.findViewById(R.id.sort_dialog_date_asc);
+        final RadioButton rbDateDsc = alertLayout.findViewById(R.id.sort_dialog_date_dsc);
+        final RadioButton rbName = alertLayout.findViewById(R.id.sort_dialog_name);
+
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(final DialogInterface dialog, int id) {
+                if (rbDateAsc.isChecked())
+                    Collections.sort(statuses);
+                else if (rbDateDsc.isChecked())
+                    Collections.sort(statuses, Collections.<ProjectStatus>reverseOrder());
+                else {
+                    Comparator<ProjectStatus> compareByName = new Comparator<ProjectStatus>() {
+                        @Override
+                        public int compare(ProjectStatus o1, ProjectStatus o2) {
+                            return o1.getName().compareTo(o2.getName());
+                        }
+                    };
+                    Collections.sort(statuses, compareByName);
+                }
+                mAdapter.notifyDataSetChanged();
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+
+        Dialog d = alert.create();
+        d.show();
+
     }
 
     private void addProjectStatus() {
@@ -159,10 +256,12 @@ public class ProjectStatusActivity extends AppCompatActivity {
         projectStatusRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                allStatuses.clear();
                 statuses.clear();
                 for (DataSnapshot projectSnapshot : dataSnapshot.getChildren()) {
                     ProjectStatus projectStatus = projectSnapshot.getValue(ProjectStatus.class);
                     statuses.add(projectStatus);
+                    allStatuses.add(projectStatus);
                 }
                 mAdapter.notifyDataSetChanged();
             }
@@ -213,6 +312,9 @@ public class ProjectStatusActivity extends AppCompatActivity {
         ivAdd = findViewById(R.id.project_status_add);
         ivBack = findViewById(R.id.project_status_back);
         rvProjectStatusList = findViewById(R.id.project_status_list);
+        tvSearch = findViewById(R.id.project_status_searchOK);
+        tvSort = findViewById(R.id.project_status_sort);
+        etSearchText = findViewById(R.id.project_status_searchtext);
     }
 
 

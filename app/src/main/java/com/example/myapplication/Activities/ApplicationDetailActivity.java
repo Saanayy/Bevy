@@ -4,11 +4,14 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,6 +35,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ApplicationDetailActivity extends AppCompatActivity {
@@ -39,6 +44,9 @@ public class ApplicationDetailActivity extends AppCompatActivity {
     //Field Variables
     private final String TAG = "ApplicationDetail";
     List<Task> tasks = new ArrayList<>();
+    List<Task> newTasks = new ArrayList<>();
+    List<Task> allTasks = new ArrayList<>();
+    boolean reset = false;
     String uid, projectID, statusID;
 
     // Views
@@ -46,6 +54,8 @@ public class ApplicationDetailActivity extends AppCompatActivity {
     RecyclerView rvTasks;
     RecyclerView.LayoutManager layoutManager;
     TaskAdapter taskAdapter;
+    private TextView tvSearch, tvSort;
+    private EditText etSearchText;
 
     //Firebase variables
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -76,6 +86,93 @@ public class ApplicationDetailActivity extends AppCompatActivity {
                 addTask();
             }
         });
+
+        tvSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewChoiceDialog();
+            }
+        });
+
+        tvSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!reset)
+                    doSearch();
+                else {
+                    reset = false;
+                    etSearchText.setText("");
+                    tvSearch.setText("OK");
+                    tasks.clear();
+                    tasks.addAll(allTasks);
+                    allTasks.clear();
+                    taskAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
+    private void viewChoiceDialog() {
+        final LayoutInflater inflater = getLayoutInflater();
+
+        final View alertLayout = inflater.inflate(R.layout.sort_choice_dialog, null);
+
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setView(alertLayout);
+
+        final RadioButton rbDateAsc = alertLayout.findViewById(R.id.sort_dialog_date_asc);
+        final RadioButton rbDateDsc = alertLayout.findViewById(R.id.sort_dialog_date_dsc);
+        final RadioButton rbName = alertLayout.findViewById(R.id.sort_dialog_name);
+
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(final DialogInterface dialog, int id) {
+                if (rbDateAsc.isChecked())
+                    Collections.sort(tasks);
+                else if (rbDateDsc.isChecked())
+                    Collections.sort(tasks, Collections.<Task>reverseOrder());
+                else {
+                    Comparator<Task> compareByName = new Comparator<Task>() {
+                        @Override
+                        public int compare(Task o1, Task o2) {
+                            return o1.getName().compareTo(o2.getName());
+                        }
+                    };
+                    Collections.sort(tasks, compareByName);
+                }
+                taskAdapter.notifyDataSetChanged();
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+
+        Dialog d = alert.create();
+        d.show();
+
+    }
+
+    private void doSearch() {
+        String search = etSearchText.getText().toString().trim();
+        if (search.length() == 0) {
+            Toast.makeText(this, "Enter some text to search", Toast.LENGTH_SHORT).show();
+        } else {
+            reset = true;
+            tvSearch.setText("RESET");
+            newTasks = new ArrayList<>(tasks);
+            tasks.clear();
+            Log.d(TAG, "doSearch: " + newTasks.size());
+            for (int i = 0; i < newTasks.size(); i++) {
+                String name = newTasks.get(i).getName();
+                Log.d(TAG, "doSearch: " + newTasks.size());
+                if (name.contains(search)) {
+                    tasks.add(newTasks.get(i));
+                    Log.d(TAG, "doSearch: " + newTasks.get(i).getName());
+                }
+            }
+            taskAdapter.notifyDataSetChanged();
+        }
     }
 
     private void addTask() {
@@ -175,9 +272,11 @@ public class ApplicationDetailActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 tasks.clear();
+                allTasks.clear();
                 for (DataSnapshot taskSnapshot : dataSnapshot.getChildren()) {
                     Task task = taskSnapshot.getValue(Task.class);
                     tasks.add(task);
+                    allTasks.add(task);
                 }
                 taskAdapter.notifyDataSetChanged();
             }
@@ -210,5 +309,8 @@ public class ApplicationDetailActivity extends AppCompatActivity {
         ivNewTask = findViewById(R.id.application_detail_add);
         rvTasks = findViewById(R.id.application_detail_list);
         ivBack = findViewById(R.id.application_detail_back);
+        tvSearch = findViewById(R.id.application_detail_searchOK);
+        tvSort = findViewById(R.id.application_detail_sort);
+        etSearchText = findViewById(R.id.application_detail_searchtext);
     }
 }

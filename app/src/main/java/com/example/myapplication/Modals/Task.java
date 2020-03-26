@@ -1,6 +1,10 @@
 package com.example.myapplication.Modals;
 
-public class Task {
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class Task implements Comparable<Task> {
     String name, date;
     boolean check;
     String taskKey;
@@ -46,5 +50,24 @@ public class Task {
 
     public void setTaskKey(String taskKey) {
         this.taskKey = taskKey;
+    }
+
+    @Override
+    public int compareTo(Task o) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date start = null, end = null;
+        try {
+            start = sdf.parse(this.getDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            end = sdf.parse(o.getDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if (start.before(end)) return -10;
+        else return 10;
+//        return  this.getName().compareTo(o.getName());
     }
 }

@@ -96,8 +96,8 @@ public class Project implements Comparable<Project> {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        if (start.before(end)) return 0;
-        else return -10;
+        if (start.before(end)) return -10;
+        else return 10;
 //        return  this.getName().compareTo(o.getName());
     }
 }
