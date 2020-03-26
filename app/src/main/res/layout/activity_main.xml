@@ -55,10 +55,52 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             />
+
+        <TextView
+            android:id="@+id/main_sort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@+id/main_add"
+            android:text="Sort"
+            android:textSize="18dp" />
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_below="@+id/main_progress"
+        android:id="@+id/main_searchbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/main_topbar"
+        android:padding="4dp">
+
+        <EditText
+            android:id="@+id/main_searchtext"
+            android:layout_width="304dp"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/main_searchOK"
+            android:layout_alignParentStart="true"
+            android:layout_marginEnd="11dp"
+            android:layout_toStartOf="@+id/main_searchOK"
+            android:focusedByDefault="false"
+            android:hint="Search text here..." />
+
+        <TextView
+            android:id="@+id/main_searchOK"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="OK"
+            android:textSize="18sp" />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+
+        android:layout_below="@+id/main_searchbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

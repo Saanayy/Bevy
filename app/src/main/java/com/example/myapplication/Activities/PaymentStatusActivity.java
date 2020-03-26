@@ -221,7 +221,7 @@ public class PaymentStatusActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Toast.makeText(PaymentStatusActivity.this, "Fetch project Cancelled", Toast.LENGTH_SHORT).show();
             }
         });
     }

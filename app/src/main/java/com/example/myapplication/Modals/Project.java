@@ -1,6 +1,10 @@
 package com.example.myapplication.Modals;
 
-public class Project {
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class Project implements Comparable<Project> {
     private String projectId;
     private String name;
     private String confirmationDate;
@@ -76,5 +80,24 @@ public class Project {
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    @Override
+    public int compareTo(Project o) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date start = null, end = null;
+        try {
+            start = sdf.parse(this.getDeadline());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            end = sdf.parse(o.getDeadline());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if (start.before(end)) return 0;
+        else return -10;
+//        return  this.getName().compareTo(o.getName());
     }
 }
