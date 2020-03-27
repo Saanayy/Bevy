@@ -13,13 +13,6 @@
         android:layout_alignParentTop="true"
         android:hint="Name" />
 
-    <EditText
-        android:id="@+id/dialog_project_status_amount"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/dialog_project_status_name"
-        android:hint="Amount"
-        android:inputType="number" />
 
     <Button
         android:id="@+id/dialog_project_status_save"
@@ -33,7 +26,7 @@
         android:id="@+id/dialog_project_status_date_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/dialog_project_status_amount">
+        android:layout_below="@+id/dialog_project_status_name">
 
         <EditText
             android:id="@+id/dialog_project_status_date"

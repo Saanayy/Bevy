@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,24 +46,32 @@ public class PaymentStatusAdapter extends RecyclerView.Adapter<PaymentStatusView
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PaymentStatusViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final PaymentStatusViewHolder holder, int position) {
         final PaymentStatus paymentStatus = statuses.get(position);
         holder.tvAmount.setText(paymentStatus.getAmount());
         holder.tvName.setText(paymentStatus.getName());
         holder.tvDate.setText(paymentStatus.getDate());
         holder.cbPaid.setChecked(paymentStatus.isCheck());
 
-        holder.cbPaid.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        holder.cbPaid.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                showDialog(isChecked, paymentStatus.getPaymentStatusKey(), paymentStatus.getAmount());
+            public void onClick(View v) {
+                boolean isChecked = holder.cbPaid.isChecked();
+                showDialog(holder, isChecked, paymentStatus.getPaymentStatusKey(), paymentStatus.getAmount());
             }
         });
+
+//        holder.cbPaid.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                showDialog(isChecked, paymentStatus.getPaymentStatusKey(), paymentStatus.getAmount());
+//            }
+//        });
 
     }
 
     private void
-    showDialog(final boolean isChecked, final String paymentStatusKey, final String amount) {
+    showDialog(final PaymentStatusViewHolder holder, final boolean isChecked, final String paymentStatusKey, final String amount) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         if (isChecked) {
             builder.setMessage("Are you sure you want to add this amount?");
@@ -87,6 +94,7 @@ public class PaymentStatusAdapter extends RecyclerView.Adapter<PaymentStatusView
                 "No",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        holder.cbPaid.setChecked(!isChecked);
                         dialog.dismiss();
                     }
                 });

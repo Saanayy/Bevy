@@ -213,10 +213,10 @@ public class ProjectStatusActivity extends AppCompatActivity {
             public void onClick(final DialogInterface dialog, int id) {
                 // Todo: check for numeric inconsistencies.
                 String name = etName.getText().toString().trim();
-                String amount = etAmount.getText().toString().trim();
+//                String amount = etAmount.getText().toString().trim();
                 String date = etDate.getText().toString().trim();
 
-                if (name.length() == 0 || date.length() == 0 || amount.length() == 0) {
+                if (name.length() == 0 || date.length() == 0) {
                     Toast.makeText(ProjectStatusActivity.this, "Empty fields, Not sent to database", Toast.LENGTH_SHORT).show();
                 } else {
                     DatabaseReference projectStatusRef = databaseReference.child("users").child(uid).child("projects").child(projectID).child("projectstatus");

@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +31,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
     Context context;
     List<Task> tasks;
     String projectId, statusID;
+    private String TAG = "TaskAdapter";
 
     public TaskAdapter(Context context, List<Task> tasks, String projectId, String statusID) {
         this.context = context;
@@ -49,21 +49,28 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final TaskViewHolder holder, int position) {
         final Task task = tasks.get(position);
         holder.tvName.setText(task.getName());
         holder.tvDate.setText(task.getDate());
         holder.cbCheck.setChecked(task.isCheck());
 
-        holder.cbCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        holder.cbCheck.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                showDialog(isChecked, task.getTaskKey());
+            public void onClick(View v) {
+                boolean isChecked = holder.cbCheck.isChecked();
+                showDialog(holder, isChecked, task.getTaskKey());
             }
         });
+//        holder.cbCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                showDialog(isChecked, task.getTaskKey());
+//            }
+//        });
     }
 
-    private void showDialog(final boolean isChecked, final String taskKey) {
+    private void showDialog(final TaskViewHolder holder, final boolean isChecked, final String taskKey) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         if (isChecked) {
             builder.setMessage("Are you sure you want to mark this task complete?");
@@ -85,7 +92,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
                 "No",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        holder.cbCheck.setChecked(!isChecked);
                         dialog.dismiss();
+
                     }
                 });
 
@@ -96,55 +105,72 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
     private void changeCompletionPercent(final boolean isChecked, final String taskKey) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String uid = mAuth.getUid();
+
         final DatabaseReference statusRef = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects")
                 .child(projectId).child("projectstatus").child(statusID);
-        statusRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                final ProjectStatus projectStatus = dataSnapshot.getValue(ProjectStatus.class);
-                int taskCompleted = projectStatus.getCompleteTaskCount();
-                if (isChecked) {
-                    taskCompleted = taskCompleted + 1;
-                } else {
-                    taskCompleted = taskCompleted - 1;
-                }
-                projectStatus.setCompleteTaskCount(taskCompleted);
-                final int finalTaskCompleted = taskCompleted;
-                statusRef.child("completeTaskCount").setValue(taskCompleted)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+
+        DatabaseReference taskRef = statusRef.child("tasks").child(taskKey);
+        taskRef.child("check" +
+                "").setValue(isChecked)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        statusRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(context, "Completed task count updated", Toast.LENGTH_SHORT).show();
-                                statusRef.child("tasks").child(taskKey).child("check").setValue(isChecked)
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                ProjectStatus status = dataSnapshot.getValue(ProjectStatus.class);
+                                int completeTaskCount = status.getCompleteTaskCount();
+                                int totalTask = status.getTaskCount();
+                                int completionPercent = status.getCompletionPercentage();
+
+                                if (isChecked) {
+                                    completeTaskCount += 1;
+                                } else {
+                                    completeTaskCount -= 1;
+                                }
+                                completionPercent = (int) ((completeTaskCount / (totalTask * 1.0)) * 100);
+                                final int finalCompletionPercent = completionPercent;
+                                statusRef.child("completeTaskCount").setValue(completeTaskCount)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
-                                                Toast.makeText(context, "check updated", Toast.LENGTH_SHORT).show();
+                                                statusRef.child("completionPercentage").setValue(finalCompletionPercent)
+                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                Toast.makeText(context, "completion percent updated", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        })
+                                                        .addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+
+                                                            }
+                                                        });
                                             }
                                         })
                                         .addOnFailureListener(new OnFailureListener() {
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(context, "Failed check update", Toast.LENGTH_SHORT).show();
+
                                             }
                                         });
-
-                                updateCompletedStatistics(finalTaskCompleted);
                             }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
+
                             @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(context, "Failed to mark task completion Status", Toast.LENGTH_SHORT).show();
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
                             }
                         });
-            }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(context, "Cancelled detching the project", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    }
+                });
+
     }
 
     private void updateCompletedStatistics(final int taskCompleted) {
@@ -152,47 +178,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
         String uid = mAuth.getUid();
         final DatabaseReference statusRef = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("projects")
                 .child(projectId).child("projectstatus").child(statusID);
-        statusRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ProjectStatus projectStatus = dataSnapshot.getValue(ProjectStatus.class);
-                int taskCount = projectStatus.getTaskCount();
-                int completionPercentage = projectStatus.getCompletionPercentage();
-                completionPercentage = (int) ((taskCompleted / (taskCount * 1.0)) * 100);
-                statusRef.child("completeTaskCount").setValue(taskCount)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(context, "Completed Tast count incremented", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(context, "Completed Tast Count increment failed", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                statusRef.child("completionPercentage").setValue(completionPercentage)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(context, "Completion percentage set", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(context, "Completion percentage set failed", Toast.LENGTH_SHORT).show();
-                            }
-                        });
 
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(context, "Setting completion statistics failed", Toast.LENGTH_SHORT).show();
-            }
-        });
 
     }
 
